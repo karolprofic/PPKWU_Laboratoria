@@ -17,10 +17,9 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=UTF-8")
             self.end_headers()            
-            self.wfile.write(b"Hello World!\n")
+            self.wfile.write(b"Hello World!</br></br>")
             named_tuple = time.localtime()
-            time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
-            self.wfile.write(b"\n\n")
+            time_string = time.strftime("%H:%M:%S", named_tuple)
             self.wfile.write(time_string.encode("utf-8"))
         else:
             super().do_GET()
