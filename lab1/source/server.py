@@ -20,6 +20,8 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(b"Hello World!\n")
             named_tuple = time.localtime()
             time_string = time.strftime("%m/%d/%Y, %H:%M:%S", named_tuple)
+            self.wfile.write(b"\n\n")
+            self.wfile.write(time_string.encode("utf-8"))
         else:
             super().do_GET()
     
