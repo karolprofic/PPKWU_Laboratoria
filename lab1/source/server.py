@@ -18,9 +18,12 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-type", "text/html; charset=UTF-8")
             self.end_headers()            
             self.wfile.write(b"Hello World!\n")
+        elif self.path.startswith('/cmd=time'):
             named_tuple = time.localtime()
             time_string = time.strftime("%H:%M:%S", named_tuple)
             self.wfile.write(time_string.encode("utf-8"))
+        elif self.path.startswith('/cmd=rev'):
+            pass
         else:
             super().do_GET()
     
