@@ -30,8 +30,11 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         elif self.path.startswith('/?cmd=rev'):
             self.prepare_headers()
             parameters = self.path.split("&str=")
-            print(parameters)
-            self.wfile.write(b"Hello World!")
+            if len(parameters) == 1:
+                self.wfile.write(b"Not found str parameter!")
+            else:
+                reversed_string = parameters[1][::-1]
+                self.wfile.write(reversed_string.encode("utf-8"))
         else:
             super().do_GET()
 
