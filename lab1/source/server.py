@@ -8,22 +8,27 @@ import time
 
 class web_server(http.server.SimpleHTTPRequestHandler):
     
-    def do_GET(self):
-
-        print(self.path)
-        
-        if self.path == '/':
+    def prepare_headers(self):
             self.protocol_version = 'HTTP/1.1'
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=UTF-8")
-            self.end_headers()            
+            self.end_headers()     
+
+    def do_GET(self):
+
+        print("Request url: " + self.path)
+        
+        if self.path == '/':
+            self.prepare_headers()
             self.wfile.write(b"Hello World!\n")
         elif self.path.startswith('/cmd=time'):
+            self.prepare_headers()
             named_tuple = time.localtime()
             time_string = time.strftime("%H:%M:%S", named_tuple)
             self.wfile.write(time_string.encode("utf-8"))
         elif self.path.startswith('/cmd=rev'):
-            pass
+            self.prepare_headers()
+            self.wfile.write(b"Hello World!\n")
         else:
             super().do_GET()
     
