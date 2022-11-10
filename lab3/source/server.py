@@ -14,6 +14,17 @@ def count_lowercase(string):
 def count_uppercase(string):
     return sum(1 for c in string if c.isupper())
 
+def count_digit(string):
+    return sum(1 for c in string if c.isdigit())
+
+def count_special(string):
+    special = "!\"£$%&/()='?^+*[]{}#@-_.:,;"
+    count = 0
+    for character in string:
+        if character in special:
+            count += 1
+    return count
+
 class web_server(http.server.SimpleHTTPRequestHandler):
 
     def prepare_headers(self):
@@ -50,10 +61,10 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             else:
                 json_response = json.dumps(
                     {
-                        "lowercase": 0,
-                        "uppercase": 0,
-                        "digits": 0,
-                        "special": 0
+                        "lowercase": count_lowercase(parameters[1]),
+                        "uppercase": count_uppercase(parameters[1]),
+                        "digits": count_digit(parameters[1]),
+                        "special": count_special(parameters[1])
                     }
                 )
                 self.wfile.write(json_response.encode("utf-8"))
