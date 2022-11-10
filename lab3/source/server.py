@@ -35,6 +35,15 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             else:
                 reversed_string = parameters[1][::-1]
                 self.wfile.write(reversed_string.encode("utf-8"))
+        elif self.path.startswith('/?cmd=stats'):
+            self.prepare_headers()
+            parameters = self.path.split("&str=")
+            if len(parameters) == 1:
+                self.wfile.write(b"Not found str parameter!")
+            else:
+                self.wfile.write(b"TO DO")
+                # reversed_string = parameters[1][::-1]
+                # self.wfile.write(reversed_string.encode("utf-8"))
         else:
             super().do_GET()
 
