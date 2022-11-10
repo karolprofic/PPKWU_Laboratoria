@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 import http.server
+import json
 import socketserver
 import os
 import time
 
 
 # print('source code for "http.server":', http.server.__file__)
+
+def count_lowercase(string):
+    return sum(1 for c in string if c.islower())
+
+def count_uppercase(string):
+    return sum(1 for c in string if c.isupper())
 
 class web_server(http.server.SimpleHTTPRequestHandler):
 
@@ -41,9 +48,15 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             if len(parameters) == 1:
                 self.wfile.write(b"Not found str parameter!")
             else:
-                self.wfile.write(b"TO DO")
-                # reversed_string = parameters[1][::-1]
-                # self.wfile.write(reversed_string.encode("utf-8"))
+                json_response = json.dumps(
+                    {
+                        "lowercase": 0,
+                        "uppercase": 0,
+                        "digits": 0,
+                        "special": 0
+                    }
+                )
+                self.wfile.write(json_response.encode("utf-8"))
         else:
             super().do_GET()
 
