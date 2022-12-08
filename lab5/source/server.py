@@ -2,21 +2,20 @@
 import http.server
 import json
 import socketserver
-import os
-import time
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
 
 # print('source code for "http.server":', http.server.__file__)
 
 def count_lowercase(string):
     return sum(1 for c in string if c.islower())
 
+
 def count_uppercase(string):
     return sum(1 for c in string if c.isupper())
 
+
 def count_digit(string):
     return sum(1 for c in string if c.isdigit())
+
 
 def count_special(string):
     special = "!\"£$%&/()='?^+*[]{}#@-_.:,;"
@@ -25,6 +24,7 @@ def count_special(string):
         if character in special:
             count += 1
     return count
+
 
 class web_server(http.server.SimpleHTTPRequestHandler):
 
@@ -39,9 +39,6 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         self.wfile.write("Error occurred".encode())
 
     def calculator(self, params):
-        if len(params) != 2:
-            self.send_error_msg()
-            return
         if 'num1' not in params.keys():
             self.send_error_msg()
             return
@@ -74,7 +71,19 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         print(input_json)
         if 'str' in input_json and 'num1' in input_json and 'num2' in input_json:
             print("1")
-
+            self.prepare_headers()
+            calculate = json.loads(self.calculator(input_json))
+            self.wfile.write(json.dumps({
+                "lowercase": count_lowercase(input_json['str']),
+                "uppercase": count_uppercase(input_json['str']),
+                "digits": count_digit(input_json['str']),
+                "special": count_special(input_json['str']),
+                "sum": calculate['sum'],
+                "sub": calculate['sub'],
+                "mul": calculate['mul'],
+                "div": calculate['div'],
+                "mod": calculate['mod']
+            }).encode())
             return
         if 'num1' in input_json and 'num2' in input_json:
             print("2")
@@ -91,44 +100,6 @@ class web_server(http.server.SimpleHTTPRequestHandler):
                 "special": count_special(input_json['str'])
             }).encode())
             return
-
-    # def do_GET(self):
-    #
-    #     print("Request url: " + self.path)
-    #
-    #     parsed = urlparse(self.path)
-    #     params = parse_qs(parsed.query)
-    #
-    #     print(params)
-    #
-    #     if len(params) != 2:
-    #         self.send_error_msg()
-    #         return
-    #     if 'num1' not in params.keys():
-    #         self.send_error_msg()
-    #         return
-    #     if 'num2' not in params.keys():
-    #         self.send_error_msg()
-    #         return
-    #     try:
-    #         number_1 = int(params['num1'][0])
-    #         number_2 = int(params['num2'][0])
-    #     except ValueError:
-    #         self.send_error_msg()
-    #         return
-    #     if number_2 == 0:
-    #         self.send_error_msg()
-    #         return
-    #
-    #     self.prepare_headers()
-    #     self.wfile.write(json.dumps(
-    #         {"sum": number_1 + number_2,
-    #          "sub": number_1 - number_2,
-    #          "mul": number_1 * number_2,
-    #          "div": int(number_1 / number_2),
-    #          "mod": number_1 % number_2
-    #          }
-    #     ).encode())
 
 
 # --- main ---
