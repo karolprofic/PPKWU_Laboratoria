@@ -37,10 +37,10 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         if 'num2' not in params.keys():
             self.send_error_msg()
             return
-        if isinstance(params['num1'], int) == False:
+        if not isinstance(params['num1'], int):
             self.send_error_msg()
             return
-        if isinstance(params['num2'], int) == False:
+        if not isinstance(params['num2'], int):
             self.send_error_msg()
             return
 
