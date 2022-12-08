@@ -9,6 +9,23 @@ from urllib.parse import parse_qs
 
 # print('source code for "http.server":', http.server.__file__)
 
+def count_lowercase(string):
+    return sum(1 for c in string if c.islower())
+
+def count_uppercase(string):
+    return sum(1 for c in string if c.isupper())
+
+def count_digit(string):
+    return sum(1 for c in string if c.isdigit())
+
+def count_special(string):
+    special = "!\"£$%&/()='?^+*[]{}#@-_.:,;"
+    count = 0
+    for character in string:
+        if character in special:
+            count += 1
+    return count
+
 class web_server(http.server.SimpleHTTPRequestHandler):
 
     def prepare_headers(self):
@@ -57,6 +74,7 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         print(input_json)
         if 'str' in input_json and 'num1' in input_json and 'num2' in input_json:
             print("1")
+
             return
         if 'num1' in input_json and 'num2' in input_json:
             print("2")
@@ -65,6 +83,13 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             return
         if 'str' in input_json:
             print("3")
+            self.prepare_headers()
+            self.wfile.write(json.dumps({
+                "lowercase": count_lowercase(input_json['str']),
+                "uppercase": count_uppercase(input_json['str']),
+                "digits": count_digit(input_json['str']),
+                "special": count_special(input_json['str'])
+            }).encode())
             return
 
     # def do_GET(self):
