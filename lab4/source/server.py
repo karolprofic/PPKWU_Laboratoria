@@ -17,6 +17,10 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-type", "text/html; charset=UTF-8")
         self.end_headers()
 
+    def send_error_msg(self):
+        self.prepare_headers()
+        self.wfile.write("Error occurred".encode())
+
     def do_GET(self):
 
         print("Request url: " + self.path)
@@ -25,8 +29,6 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         params = parse_qs(parsed.query)
 
         if len(params) == 2 and 'num1' in params.keys() and 'num2' in params.keys():
-            self.prepare_headers()
-        else:
             self.prepare_headers()
 
 
