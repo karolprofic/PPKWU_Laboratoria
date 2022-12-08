@@ -22,8 +22,12 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         print("Request url: " + self.path)
 
         parsed = urlparse(self.path)
-        qs = parse_qs(parsed.query)
+        params = parse_qs(parsed.query)
 
+        if len(params) == 2 and 'num1' in params.keys() and 'num2' in params.keys():
+            self.prepare_headers()
+        else:
+            self.prepare_headers()
 
 
 # --- main ---
