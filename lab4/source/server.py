@@ -50,7 +50,14 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             return
         
         self.prepare_headers()
-        self.wfile.write("Ok".encode())
+        self.wfile.write(json.dumps(
+            {"sum": number_1 + number_2,
+             "sub": number_1 - number_2,
+             "mul": number_1 * number_2,
+             "div": int(number_1 / number_2),
+             "mod": number_1 % number_2
+             }
+        ).encode())
 
 
 # --- main ---
