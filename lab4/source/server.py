@@ -28,6 +28,8 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         params = parse_qs(parsed.query)
 
+        print(params)
+
         if len(params) != 2:
             self.send_error_msg()
             return
@@ -37,17 +39,18 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         if 'num2' not in params.keys():
             self.send_error_msg()
             return
-        if not isinstance(params['num1'], int):
+        try:
+            number_1 = int(params['num1'][0])
+            number_2 = int(params['num2'][0])
+        except ValueError:
             self.send_error_msg()
             return
-        if not isinstance(params['num2'], int):
-            self.send_error_msg()
-            return
-        if params['num2'] == 0:
+        if number_2 == 0:
             self.send_error_msg()
             return
         
         self.prepare_headers()
+        self.wfile.write("Ok".encode())
 
 
 # --- main ---
