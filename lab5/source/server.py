@@ -21,6 +21,34 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         self.prepare_headers()
         self.wfile.write("Error occurred".encode())
 
+    def calculator(self, params):
+        if len(params) != 2:
+            self.send_error_msg()
+            return
+        if 'num1' not in params.keys():
+            self.send_error_msg()
+            return
+        if 'num2' not in params.keys():
+            self.send_error_msg()
+            return
+        try:
+            number_1 = int(params['num1'])
+            number_2 = int(params['num2'])
+        except ValueError:
+            self.send_error_msg()
+            return
+        if number_2 == 0:
+            self.send_error_msg()
+            return
+
+        return json.dumps({
+            "sum": number_1 + number_2,
+            "sub": number_1 - number_2,
+            "mul": number_1 * number_2,
+            "div": int(number_1 / number_2),
+            "mod": number_1 % number_2
+        })
+
     def do_POST(self):
         self.prepare_headers()
         data_len = self.rfile.read(int(self.headers['Content-Length']))
@@ -32,10 +60,12 @@ class web_server(http.server.SimpleHTTPRequestHandler):
             return
         if 'num1' in input_json and 'num2' in input_json:
             print("2")
+            self.prepare_headers()
+            self.wfile.write(self.calculator(input_json).encode())
             return
         if 'str' in input_json:
             print("3")
-            return 
+            return
 
     # def do_GET(self):
     #
