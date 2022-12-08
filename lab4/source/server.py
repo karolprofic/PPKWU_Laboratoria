@@ -28,8 +28,23 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         params = parse_qs(parsed.query)
 
-        if len(params) == 2 and 'num1' in params.keys() and 'num2' in params.keys():
-            self.prepare_headers()
+        if len(params) != 2:
+            self.send_error_msg()
+            return
+        if 'num1' not in params.keys():
+            self.send_error_msg()
+            return
+        if 'num2' not in params.keys():
+            self.send_error_msg()
+            return
+        if isinstance(params['num1'], int) == False:
+            self.send_error_msg()
+            return
+        if isinstance(params['num2'], int) == False:
+            self.send_error_msg()
+            return
+
+        self.prepare_headers()
 
 
 # --- main ---
