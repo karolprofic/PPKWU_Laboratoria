@@ -43,7 +43,10 @@ class web_server(http.server.SimpleHTTPRequestHandler):
         if not isinstance(params['num2'], int):
             self.send_error_msg()
             return
-
+        if params['num2'] == 0:
+            self.send_error_msg()
+            return
+        
         self.prepare_headers()
 
 
