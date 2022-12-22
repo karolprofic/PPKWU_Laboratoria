@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-import json
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, Response
 import xmltodict
 import dicttoxml
 from xml.dom.minidom import parseString
@@ -81,7 +80,6 @@ def zad6():
 
     return_xml = dicttoxml.dicttoxml({**str_stats, **num_stats}, attr_type=False)
     return Response(parseString(return_xml).toprettyxml(), mimetype='application/xml')
-
 
 
 # --- main ---
