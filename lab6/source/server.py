@@ -83,6 +83,7 @@ def zad6():
     return Response(parseString(return_xml).toprettyxml(), mimetype='application/xml')
 
 
+
 # --- main ---
 
 PORT = 4080
