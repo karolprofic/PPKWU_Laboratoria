@@ -7,7 +7,6 @@ from xml.dom.minidom import parseString
 
 app = Flask(__name__)
 
-
 def count_lowercase(string):
     return sum(1 for c in string if c.islower())
 
@@ -62,33 +61,25 @@ def calculator(number_1, number_2):
     }
 
 
-parameter_names_nums = ["sum", "sub", "mul", "div", "mod"]
-parameter_names_str = ["lowercase", "uppercase", "digits", "special"]
-
-
 @app.post('/')
 def zad6():
-    response_str = {}
-    response_nums = {}
+    str_stats = {}
+    num_stats = {}
     data_xml = request.get_data()
     data = xmltodict.parse(data_xml)
 
     if 'root' in data:
         data_to_parse = data['root']
-        print(data["str"])
+        if 'num1' in data_to_parse and 'num2' in data_to_parse:
+            num_stats = dict(calculator(int(data_to_parse['num1']), int(data_to_parse['num2'])))
 
         if 'str' in data_to_parse:
-            response_str = dict(string_process(data["str"]))
+            str_stats = dict(string_process(data_to_parse['str']))
 
-        if 'num1' in data_to_parse and 'num2' in data_to_parse:
-            response_nums = dict(calculator(int(data_to_parse['num1']), int(data_to_parse['num2'])))
-    if 'str' in data:
-        response_str = dict(string_process(data['str']))
+    elif 'str' in data:
+        str_stats = dict(string_process(data['str']))
 
-    print(response_str)
-    print(response_nums)
-
-    return_xml = dicttoxml.dicttoxml({**response_str, **response_nums}, attr_type=False)
+    return_xml = dicttoxml.dicttoxml({**str_stats, **num_stats}, attr_type=False)
     return Response(parseString(return_xml).toprettyxml(), mimetype='application/xml')
 
 
