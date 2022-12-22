@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-import http.server
 import json
-import socketserver
 from flask import Flask, request, jsonify, Response
 import xmltodict
 import dicttoxml
 from xml.dom.minidom import parseString
 
 app = Flask(__name__)
+
 
 def count_lowercase(string):
     return sum(1 for c in string if c.islower())
@@ -30,100 +29,67 @@ def count_special(string):
     return count
 
 
-def send_error_msg(self):
-    self.prepare_headers()
-    self.wfile.write("Error occurred".encode())
+def string_process(string):
+    return {
+        "lowercase": count_lowercase(string),
+        "uppercase": count_uppercase(string),
+        "digits": count_digit(string),
+        "special": count_special(string),
+    }
 
-def calculator(self, params):
-    if 'num1' not in params.keys():
-        self.send_error_msg()
-        return
-    if 'num2' not in params.keys():
-        self.send_error_msg()
-        return
+
+def send_error_msg():
+    pass
+
+
+def calculator(number_1, number_2):
     try:
-        number_1 = int(params['num1'])
-        number_2 = int(params['num2'])
+        number_1 = int(number_1)
+        number_2 = int(number_2)
     except ValueError:
-        self.send_error_msg()
+        send_error_msg()
         return
     if number_2 == 0:
-        self.send_error_msg()
+        send_error_msg()
         return
 
-    return json.dumps({
+    return {
         "sum": number_1 + number_2,
         "sub": number_1 - number_2,
         "mul": number_1 * number_2,
         "div": int(number_1 / number_2),
         "mod": number_1 % number_2
-    })
+    }
+
+
+parameter_names_nums = ["sum", "sub", "mul", "div", "mod"]
+parameter_names_str = ["lowercase", "uppercase", "digits", "special"]
+
 
 @app.post('/')
 def zad6():
+    response_str = {}
+    response_nums = {}
     data_xml = request.get_data()
     data = xmltodict.parse(data_xml)
 
-    if 'str' in data:
+    if 'root' in data:
         data_to_parse = data['root']
+        print(data["str"])
+
         if 'str' in data_to_parse:
-            print("str")
+            response_str = dict(string_process(data["str"]))
 
         if 'num1' in data_to_parse and 'num2' in data_to_parse:
-            print("str i int")
+            response_nums = dict(calculator(int(data_to_parse['num1']), int(data_to_parse['num2'])))
+    if 'str' in data:
+        response_str = dict(string_process(data['str']))
 
-    if 'root' in data:
-        print("int")
+    print(response_str)
+    print(response_nums)
 
-
-
-
-    # def do_POST(self):
-    #     print("POST Request")
-    #     self.prepare_headers()
-    #     data_len = self.rfile.read(int(self.headers['Content-Length']))
-    #     x = self.rfile.read()
-    #     # input_json = json.loads(data_len)
-    #     # self.wfile.write(json.dumps(input_json).encode())
-    #     # tree = ET.parse('movies.xml')
-    #     #
-    #
-    #     print(data_len)
-    #     print(x)
-
-
-
-        # if 'str' in input_json and 'num1' in input_json and 'num2' in input_json:
-        #     print("1")
-        #     self.prepare_headers()
-        #     calculate = json.loads(self.calculator(input_json))
-        #     self.wfile.write(json.dumps({
-        #         "lowercase": count_lowercase(input_json['str']),
-        #         "uppercase": count_uppercase(input_json['str']),
-        #         "digits": count_digit(input_json['str']),
-        #         "special": count_special(input_json['str']),
-        #         "sum": calculate['sum'],
-        #         "sub": calculate['sub'],
-        #         "mul": calculate['mul'],
-        #         "div": calculate['div'],
-        #         "mod": calculate['mod']
-        #     }).encode())
-        #     return
-        # if 'num1' in input_json and 'num2' in input_json:
-        #     print("2")
-        #     self.prepare_headers()
-        #     self.wfile.write(self.calculator(input_json).encode())
-        #     return
-        # if 'str' in input_json:
-        #     print("3")
-        #     self.prepare_headers()
-        #     self.wfile.write(json.dumps({
-        #         "lowercase": count_lowercase(input_json['str']),
-        #         "uppercase": count_uppercase(input_json['str']),
-        #         "digits": count_digit(input_json['str']),
-        #         "special": count_special(input_json['str'])
-        #     }).encode())
-        #     return
+    return_xml = dicttoxml.dicttoxml({**response_str, **response_nums}, attr_type=False)
+    return Response(parseString(return_xml).toprettyxml(), mimetype='application/xml')
 
 
 # --- main ---
